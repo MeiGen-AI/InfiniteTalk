@@ -1,0 +1,9 @@
+ftfy
+accelerate>=1.2.1
+einops
+diffusers>=0.33.0
+peft>=0.15.0
+sentencepiece>=0.2.0
+protobuf
+pyloudnorm
+gguf>=0.14.0
