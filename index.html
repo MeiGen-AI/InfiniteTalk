@@ -1,0 +1,1676 @@
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>InfiniteTalk</title>
+        <meta name="description" content="InfiniteTalk is a infinite long sequence audio-driven video editing model.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#000000">
+
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1.9.1/css/academicons.min.css">
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-9R6G4R5JJQ"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9R6G4R5JJQ');
+        </script>
+
+        <style>
+            @font-face {
+                font-family: 'Raleway';
+                font-style: normal;
+                font-weight: 600;
+                font-display: block;
+                src: url(assets/fonts/raleway_normal_600.woff2) format('woff2');
+                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            }
+            @font-face {
+                font-family: 'Outfit';
+                font-style: normal;
+                font-weight: 100 900;
+                font-display: block;
+                src: url(assets/fonts/outfit.woff2) format('woff2');
+                unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            :root {
+                --intro-scale: 0
+            }
+
+            body {
+                margin: 0;
+                font-family: "Outfit", sans-serif;
+                background: #28282d;
+                color: #fff;
+            }
+
+            .flex {
+                display: flex;
+                gap: 24px;
+                align-items: stretch;
+                justify-content: stretch;
+            }
+            .flex-center {
+                align-items: center;
+            }
+
+            #logo {
+                position: absolute;
+                top: 0;
+                right: calc(50vw - min(45vw, 1600px / 2));
+                z-index: 1;
+                background: rgb(60, 140, 255);
+                padding: 32px 8px 8px 8px;
+                border-radius: 0 0 8px 8px;
+            }
+            #logo svg {
+                width: 40px;
+                height: 40px;
+            }
+
+
+            section {
+                border-top: 1px solid #333;
+                padding: 48px calc(50vw - min(45vw, 1600px / 2));
+            }
+
+            .text {
+                margin-bottom: 50px;
+            }
+
+            #intro {
+                text-align: center;
+                height: 100vh;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: none;
+            }
+
+            #intro .content {
+                top: 0;
+                left: 0;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            #intro .background-video {
+                width: calc(100vw * (1 - var(--intro-scale)) + min(90vw, 1600px) * var(--intro-scale));
+                height: calc(100vh * (1 - var(--intro-scale)) + 90vh * var(--intro-scale));
+                border-radius: calc(0px * (1 - var(--intro-scale)) + 16px * var(--intro-scale));
+                overflow: hidden;
+            }
+            #intro video {
+                width: calc(100% + 20px);
+                height: calc(100% + 20px);
+                margin-left: -10px;
+                margin-top: -10px;
+                object-fit: cover;
+                filter: brightness(50%) blur(10px);
+            }
+
+            #intro h1 {
+                font-size: 60px;
+                margin: 100px 0 20px 0;
+                font-family: "Raleway", sans-serif;
+                font-optical-sizing: auto;
+                font-weight: 600;
+                font-style: normal;
+            }
+
+            #intro h2 {
+                margin: 20px 0 40px 0;
+                font-size: 20px;
+                font-weight: 200;
+            }
+
+            #intro h3 {
+                margin: 20px 0 40px 0;
+                font-size: 40px;
+                font-weight: 200;
+            }
+
+            #t2v {
+                border: none;
+            }
+            #t2v .text:not(:first-of-type) {
+                margin-top: 48px;
+            }
+            #t2v .feature-video {
+                aspect-ratio: 21 / 9;
+            }
+            .feature-video {
+                position: relative;
+            }
+            .feature-video .cover {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(10px);
+                text-align: center;
+                transition: backdrop-filter 0.5s;
+                cursor: pointer;
+                z-index: 1;
+            }
+            .feature-video .button {
+                width: 64px;
+                height: 64px;
+                border-radius: 32px;
+                background-color: #fff;
+                background-image: url(assets/icons/play.svg);
+                background-position: center;
+                background-repeat: no-repeat;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+                margin: 32px auto 0 auto;
+                transition: box-shadow 0.5s;
+            }
+            .feature-video .cover:hover .button {
+                box-shadow: 0 0 35px rgba(0, 0, 0, 0.5);
+            }
+            .feature-video video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .feature-video video.final-video {
+                object-fit: contain;
+                opacity: 0;
+            }
+
+            h1 {
+                font-size: 32px;
+                font-weight: 400;
+                margin: 0;
+            }
+            p {
+                font-size: 16px;
+                color: #b9bbc6;
+                line-height: 25px;
+                font-weight: 300;
+            }
+
+            .grid {
+                display: grid;
+                grid-gap: 16px;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            .grid2 {
+                display: grid;
+                grid-gap: 16px;
+                grid-template-columns: 1fr 1fr;
+            }
+            .grid3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .grid4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .grid4r {
+                display: grid;
+                grid-gap: 16px;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+            .grid5 {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            /* .video-player {
+                width: 100%;
+                display: flex;
+                justify-content: stretch;
+                align-items: stretch;
+                position: relative;
+                border-radius: 16px;
+                overflow: hidden;
+                background: #222;
+            } */
+            .video-player {
+                width: 100%;
+                display: flex;
+                flex-direction: column; /* Stack children vertically */
+                align-items: stretch;
+                position: relative;
+                border-radius: 16px;
+                overflow: hidden;
+                background: #222;
+                gap: 8px; /* Space between video and caption */
+            }
+
+            .video-player video {
+                width: 100%;
+                display: block;
+                flex-shrink: 0; /* Prevent video from shrinking */
+            }
+
+            .video-caption {
+                padding: 0 12px 12px;
+                color: #fff;
+                font-size: 14px;
+                text-align: center;
+                line-height: 1.4;
+            }
+
+            .video-caption {
+                text-align: center;
+                font-size: 16px;
+                color: #666;
+                border-top: 1px solid #ddd;
+                padding: 10px 0;
+            }
+            video {
+                width: 100%;
+                object-fit: cover;
+            }
+            .span12 {
+                grid-row: span 2;
+            }
+            .span22 {
+                grid-column: span 2;
+                grid-row: span 2;
+            }
+            .span21 {
+                grid-column: span 2;
+            }
+            #i2v .author {
+                position: absolute;
+                left: 16px;
+                top: 16px;
+                font-size: 10px;
+                padding: 4px 8px;
+                border-radius: 4px;
+                background: rgba(0,0,0,0.5);
+                opacity: 0;
+                transition: opacity 0.5s;
+            }
+            #i2v .video-player:hover .author {
+                opacity: 1;
+            }
+            #i2v2 {
+                padding-top: 0;
+                border: none;
+            }
+            #i2v2 .page-control {
+                margin-bottom: 48px;
+            }
+            #i2v2 .page-content .video-player {
+                aspect-ratio: 448 / 800;
+            }
+
+            .page-select {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                margin: 8px 0 16px 0;
+            }
+            .page-select > div {
+                padding: 8px 16px;
+                border-radius: 100px;
+                cursor: pointer;
+                transition: background-color 0.5s, color 0.5s;
+                background: rgba(0,0,0,0.25);
+            }
+            .page-select > div:hover {
+                background-color: rgba(0,0,0,0.5);
+            }
+            .page-select > div[selected=true] {
+                background-color: #fff;
+                color: #000;
+            }
+            .page-content > div:not([selected=true]) {
+                display: none;
+            }
+
+            #long {
+                background: linear-gradient(75deg, #524037, #282025);
+            }
+            #long .text {
+                width: 30%;
+                flex-shrink: 0;
+            }
+            #shots {
+                padding-top: 0;
+                padding-bottom: 0;
+                background: linear-gradient(180deg, #222a2d, #121a1d);
+            }
+            #shots video {
+                aspect-ratio: 872 / 480;
+            }
+            #shots .main {
+                position: sticky;
+                top: 0;
+                max-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 40px 0;
+            }
+            #shots > .flex {
+                align-items: stretch;
+            }
+            .shots-list {
+                padding: 64px 0;
+                width: 30%;
+                min-width: 300px;
+                flex-shrink: 0;
+                position: relative;
+                scrollbar-width: none;
+            }
+            .shots-list > div {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+                border-radius: 8px;
+                padding-right: 16px;
+                cursor: pointer;
+                white-space: nowrap;
+                transition: background-color 0.5s;
+            }
+            .shots-list p {
+                font-size: 14px;
+            }
+            .shots-list > div:not(:last-of-type) {
+                margin-bottom: 8px;
+            }
+            .shots-list > div[selected] {
+                background:rgba(0, 0, 0, 0.5)
+            }
+            .shots-list > div:hover {
+                background:rgba(255, 255, 255, 0.2)
+            }
+            .shots-list img {
+                width: 80px;
+                border-radius: 8px;
+                aspect-ratio: 872 / 480;
+            }
+            .shots-list h6 {
+                margin: 4px 0 0 0;
+            }
+            .shots-list p {
+                margin: 0;
+            }
+
+            @media (min-height: 1024px) {
+                #shots {
+                    padding-top: 0;
+                    padding-bottom: 0;
+                }
+                .shots-list {
+                    max-height: 900px;
+                    overflow: scroll;
+                }
+            }
+
+            #audio, #avatar {
+                background: #202820;
+            }
+
+            #identity {
+                background: #2f2820;
+            }
+
+            #real-time {
+                background: #000;
+            }
+
+
+            .audio-control {
+                transition: transform 0.5s, box-shadow 0.5s;
+            }
+            .audio-button {
+                width: 64px;
+                height: 64px;
+                border-radius: 32px;
+                position: absolute;
+                right: 32px;
+                bottom: 32px;
+                transition: box-shadow 0.5s, opacity 0.5s;
+                cursor: pointer;
+                background-color: #fff;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: 32px;
+                background-image: url(assets/icons/mute.svg);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                z-index: 2;
+            }
+            body[muted=false] .audio-button {
+                background-image: url(assets/icons/unmute.svg);
+            }
+            @media (min-width: 640px) {
+                body[muted=false] .audio-control:hover {
+                    transform: scale(1.05);
+                    z-index: 1;
+                    box-shadow: 0 0 32px rgba(0,0,0,0.8);
+                }
+                .audio-control .audio-button {
+                    opacity: 0;
+                }
+                .audio-control:hover .audio-button {
+                    opacity: 1;
+                }
+                .audio-control .audio-button:hover {
+                    background-color: #fff;
+                    border: none;
+                    box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+                }
+                .audio-button-mobile {
+                    display: none;
+                }
+
+                .mobile-only {
+                    display: none !important;
+                }
+            }
+            .duration-indicator {
+                position: relative;
+            }
+            .duration-indicator .bar {
+                position: absolute;
+                bottom: 16px;
+                left: 32px;
+                width: calc(100% - 64px);
+                height: 4px;
+                border-radius: 100px;
+                background: rgba(255,255,255,0.5);
+                overflow: hidden;
+                transition: opacity 0.5s;
+            }
+            .duration-indicator .barinner {
+                height: 100%;
+                width: 0;
+                background: #fff;
+            }
+
+            .duration-indicator .time {
+                position: absolute;
+                right: 32px;
+                bottom: 24px;
+                transition: opacity 0.5s;
+                font-size: 14px;
+            }
+
+            #super-resolution {
+                background: linear-gradient(75deg, #282838, #222233)
+            }
+            #super-resolution .text {
+                max-width: 30%;
+            }
+
+            .video-slider {
+                width: 100%;
+                aspect-ratio: 16 / 9;
+                background: #222;
+                border-radius: 16px;
+                overflow: hidden;
+                position: relative;
+            }
+            .video-slider .video1,
+            .video-slider .video2 {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                background: #222;
+            }
+            .video-slider .video1 {
+                width: 50%;
+                border-right: 3px solid #fff;
+                z-index: 2;
+            }
+            .video-slider .button {
+                width: 64px;
+                height: 64px;
+                border-radius: 32px;
+                background-color: #fff;
+                background-image: url(assets/icons/drag.svg);
+                background-position: center;
+                background-repeat: no-repeat;
+                position: absolute;
+                transition: box-shadow 0.5s, opacity 0.5s;
+                z-index: 3;
+                opacity: 0.5;
+            }
+            .video-slider:hover .button {
+                opacity: 1;
+            }
+            .video-slider .button:hover {
+                box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+            }
+            .video-slider .slider {
+                background-image: url(assets/icons/drag.svg);
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                cursor: grab;
+            }
+            .video-slider video {
+                width: auto;
+                height: 100%;
+            }
+            .video-slider .label {
+                display: inline-block;
+                position: absolute;
+                top: 32px;
+                font-size: 14px;
+                font-weight: 600;
+                background-color: #fff;
+                border-radius: 4px;
+                opacity: 0.75;
+                color: #000;
+                padding: 4px 8px;
+                user-select: none;
+            }
+            .video-slider .video1 .label {
+                left: 32px
+            }
+            .video-slider .video2 .label {
+                right: 32px
+            }
+            .video-slider .fullscreen {
+                background-image: url(assets/icons/fullscreen.svg);
+                opacity: 0;
+                bottom: 32px;
+                right: 32px;
+            }
+            body[fullscreen] .video-slider .fullscreen {
+                background-image: url(assets/icons/fullscreen-exit.svg);
+            }
+
+            #camera-control .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            #camera-control h6 {
+                margin: 8px 0;
+                z-index: 1;
+            }
+            #camera-control .video-player,
+            #world-explore .video-player {
+                aspect-ratio: 16 / 9;
+            }
+
+            #camera-control {
+                background: linear-gradient(90deg, #252820, #102028);
+            }
+
+            #world-explore {
+                background: linear-gradient(90deg, #252820, #152028);
+            }
+            
+            #synthetic {
+                padding-bottom: 80px;
+                background: linear-gradient(#102028, #000);
+            }
+
+            #synthetic .flex {
+                gap: 16px;
+            }
+
+            #team {
+                background-color: #000;
+                text-align: center;
+                padding: 80px 16px 160px 16px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: none;
+            }
+            #team .content {
+                width: 100%;
+            }
+            #team .flex {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            #team h3 {
+                font-size: 20px;
+                font-weight: 400;
+                margin-top: 80px;
+                margin-bottom: 8px;
+            }
+            #team h4 {
+                font-size: 17px;
+                font-weight: 400;
+                margin-top: 32px;
+                margin-bottom: 8px;
+            }
+            #team h6 {
+                font-weight: 200;
+                margin: 0;
+                opacity: 0.8;
+            }
+            #team ul {
+                padding: 0;
+                margin: 0;
+                min-width: 250px;
+            }
+            #team li,
+            #team p {
+                font-size: 17px;
+                font-weight: 200;
+                line-height: 28px;
+                list-style-type: none;
+                text-wrap: balance;
+            }
+            #team p {
+                max-width: 1600px;
+                color: #fff;
+                margin: 16px auto 0 auto;
+            }
+            #team p span {
+                text-wrap: nowrap;
+            }
+
+            a.external {
+                border-radius: 100px;
+                text-decoration: none;
+                padding: 8px 16px;
+                cursor: pointer;
+                transition: background-color 0.5s, color 0.5s;
+                color: #b9bbc6;
+                font-size: 14px;
+                margin-top: 8px;
+                margin-bottom: -24px;
+                display: inline-block;
+                background: rgba(0,0,0,0.3);
+            }
+            a.external:hover {
+                background: rgba(255,255,255,1) !important;
+                color: #000;
+            }
+            #real-time a.external {
+                background: rgba(255,255,255,0.1);
+            }
+            #shots a.external {
+                margin-bottom: 0;
+            }
+
+            .paper-button {
+                padding-right: 16px;
+                border-radius: 8px;
+                color: #fff;
+                background-color: rgba(128,128,128,0.3);
+                cursor: pointer;
+                transition: background-color 0.5s;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                overflow: hidden;
+            }
+
+            .paper-button .icon {
+                box-sizing: content-box;
+                padding: 8px;
+                background-color: rgba(255,255,255,0.7);
+                margin-right: 16px;
+                transition: background-color 0.5s;
+            }
+
+            .paper-button:hover {
+                background-color: #fff;
+                color: #000;
+            }
+            .paper-button:hover .icon {
+                background-color: #fff;
+            }
+
+            @media (max-width: 640px) {
+                #intro h1 {
+                    font-size: 64px;
+                }
+                #intro .background-video {
+                    width: calc(100vw * (1 - var(--intro-scale)) + (100vw - 32px) * var(--intro-scale));
+                }
+
+                h1 {
+                    font-size: 24px;
+                }
+
+                section {
+                    padding: 32px 16px;
+                    position: relative;
+                }
+
+                .grid {
+                    gap: 4px;
+                }
+                .flex {
+                    gap: 4px !important;
+                }
+
+                .flex-mobile {
+                    display: block;
+                }
+
+                #t2v .feature-video {
+                    aspect-ratio: 1;
+                    max-height: calc(100vh - 64px);
+                }
+
+                #long .text,
+                #super-resolution .text {
+                    width: 100%;
+                    max-width: 100%;
+                }
+                #shots {
+                    padding: 32px 16px;
+                }
+                #shots .main {
+                    position: relative;
+                    padding: 0 0 16px 0;
+                }
+                #shots .shots-list {
+                    display: flex;
+                    overflow-x: scroll;
+                    gap: 4px;
+                    width: 100vw;
+                    margin: 0 0 0 -16px;
+                    padding: 0 16px;
+                    scroll-snap-type: x mandatory;
+                }
+                #shots .shots-list > div {
+                    scroll-snap-align: start;
+                    scroll-margin: 16px;
+                }
+
+                .grid:not(.grid-noslide) {
+                    display: flex;
+                    overflow-x: scroll;
+                    width: 100vw;
+                    margin-left: -16px;
+                    padding: 0 16px;
+                    scroll-snap-type: x mandatory;
+                    scrollbar-width: none;
+                }
+                .grid:not(.grid-noslide) > * {
+                    width: calc(100vw - 64px);
+                    max-height: calc(100vh - 64px);
+                    flex-shrink: 0;
+                    scroll-snap-align: center;
+                    scroll-snap-stop: always;
+                    scroll-margin: 16px;
+                }
+                .grid:not(.grid-noslide) .video-player:not(:first-of-type),
+                .grid:not(.grid-noslide) *:not(:first-of-type) .video-player {
+                    border-top-left-radius: 0;
+                    border-bottom-left-radius: 0;
+                }
+                .grid:not(.grid-noslide) .video-player:not(:last-of-type),
+                .grid:not(.grid-noslide) *:not(:last-of-type) .video-player {
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+                }
+
+                .audio-control .audio-button {
+                    display: none;
+                }
+                .audio-button-mobile {
+                    right: 48px;
+                    bottom: 48px;
+                }
+                section:has(a.external) .audio-button-mobile {
+                    bottom: 96px;
+                }
+
+                .duration-indicator .bar {
+                    left: 16px;
+                    bottom: 8px;
+                    width: calc(100% - 32px);
+                }
+                .duration-indicator .time {
+                    right: 16px;
+                    bottom: 16px;
+                }
+
+                #synthetic .grid {
+                    border-radius: 16px;
+                    overflow: hidden;
+                }
+                #synthetic .video-player {
+                    border-radius: 0;
+                }
+                #synthetic .flex > div:last-child {
+                    display: none;
+                }
+
+                section:has(a.external) {
+                    padding-bottom: 80px !important;
+                }
+                a.external {
+                    position: absolute;
+                    bottom: 48px;
+                    left: 16px;
+                    width: calc(100vw - 32px);
+                    text-align: center;
+                }
+
+                #shots a.external {
+                    position: inherit;
+                    margin: 8px 0;
+                }
+                #shots {
+                    padding-bottom: 24px !important;
+                }
+
+                .desktop-only {
+                    display: none !important;
+                }
+
+                #synthetic a.external {
+                    background: rgba(255,255,255,0.1);
+                }
+
+                .page-select {
+                    justify-content: space-evenly;
+                    overflow: scroll;
+                    margin-left: -16px;
+                    margin-right: -16px;
+                    padding-left: 16px;
+                    padding-right: 16px;
+                    scrollbar-width: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- <div id="logo">
+            <svg viewBox="1.37 0 1198.25 1051.64" xmlns="http://www.w3.org/2000/svg"><path d="m206.82 943.8-205.45 52.74v-941.44l205.45 53.14z" fill="#fff"/><path d="m532.79 972.14-205.44 53.13v-554.55l205.44 53.13z" fill="#fff"/><path d="m667.02 388.86 205.84-53.14v554.55l-205.84-53.13z" fill="#fff"/><path d="m1199.62 998.9-205.84 52.74v-1051.64l205.84 53.13z" fill="#fff"/></svg>
+        </div> -->
+        <section id="intro">
+            <div class="background-video">
+                <video muted loop playsinline preload="none" src="videos/bg_trim.mp4"></video>
+            </div>
+            <div class="content">
+                <div class="text">
+                    <!-- <h3>InfiniteTalk</h3> -->
+                    <h1>InfiniteTalk: Audio-driven Video Generation for Sparse-Frame Video Dubbing</h1>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block">
+                            <a href="">Shaoshu Yang</a><sup>1,2,3*</sup>,
+                          </span>
+                        <span class="author-block">
+                          <a href="">Zhe Kong</a><sup>4,2,5*</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="">Feng Gao</a><sup>2*</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="">Meng Cheng</a><sup>2*</sup>,
+                        </span>
+                        <span class="author-block">
+                          <a href="">Xiangyu Liu</a><sup>6, 2, 1*</sup>,
+                        </span>
+                        <span class="author-block">
+                          <a href="https://scholar.google.com/citations?user=W1ZXjMkAAAAJ">Yong ZHang</a><sup>2<i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup>,
+                        </span>
+                        <span class="author-block">
+                          <a href="https://scholar.google.com/citations?user=JXV5yrZxj5MC">Zhuoliang Kang</a><sup>2</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://openreview.net/profile?id=~Xunliang_Cai1">Wenhan Luo</a><sup>5</sup>,
+                          </span>
+                        <span class="author-block">
+                          <a href="https://guanyingc.github.io/">Xunliang Cai</a><sup>2</sup>,
+                        </span>
+                        <span class="author-block">
+                          <a href="https://whluo.github.io/">Ran He</a><sup>1.3<i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup>
+                        </span>
+                        <span class="author-block">
+                            <a href="https://scholar.google.com/citations?user=JXV5yrZxj5MC">Xiaoming Wei</a><sup>2</sup>,
+                          </span>
+                    </div>
+                    <br>
+                    <div class="is-size-5 publication-authors">
+                        <span class="author-block"><sup>1</sup>School of Artificial Intelligence, University of Chinese Academy of Sciences,</span>
+                        <span class="author-block"><sup>2</sup>Meituan,</span>
+                        <br>
+                        <span class="author-block"><sup>3</sup>New Laboratory of Pattern Recognition (NLPR), CASIA,</span>
+                        <span class="author-block"><sup>4</sup>Shenzhen Campus of Sun Yat-sen University,</span>
+                        <br>
+                        <span class="author-block"><sup>4</sup>Division of AMC and Department of ECE, HKUST,</span>
+                        <span class="author-block"><sup>4</sup>State Key Laboratory of Multimodal Artificial Intelligence Systems, CASIA</span>
+                        <br>
+                        <span class="author-block"><sup>*</sup>Equal Contribution</span> 
+                        <span class="author-block"><sup><i class="fas fa-envelope" style="margin-left: 5px; color: #555;"></i></sup>Corresponding Author</span> 
+                        <br>
+                        <br>
+                        <br>
+                    </div>
+
+                    <a class="paper-button" href="" target="_blank" rel="noopener noreferrer">
+                        <!-- <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M280-280h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm-80 480q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+                        </span> -->
+                        <span class="icon">
+                            <!-- <i class="ai ai-arxiv"></i> -->
+                            <i class="fas fa-file-pdf"></i>
+                        </span>
+                        <span>
+                            Technique Report
+                        </span>
+                    </a>
+                    <a class="paper-button" href="https://github.com/MeiGen-AI/InfiniteTalk" target="_blank" rel="noopener noreferrer">
+                        <!-- <span class="icon">
+                            <svg  class="fab fa-github" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M280-280h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm-80 480q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z"/></svg>
+                        </span> -->
+                        <span class="icon">
+                            <i class="fab fa-github"></i>
+                        </span>
+                        <span>
+                            Code
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="shots">
+            <div class="text">
+                <h1>
+                    Long sequence video dubbing
+                </h1>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/1.mp4"></video>
+                </div>
+                <div class="video-player audio-control  span22">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/0.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/3.mp4"></video>
+                </div>
+                <div class="video-player audio-control span22">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/2.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/4.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/5.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/6.mp4"></video>
+                </div>
+                <div class="video-player audio-control  span22">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/9.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/video_dubbing/7.mp4"></video>
+                </div>
+                
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+        </section>
+
+        <section id="i2v">
+            <div class="text">
+                <h1>
+                    Long sequence image-to-video human animation
+                </h1>
+            </div>
+            <!-- <div class="text">
+                <h2>
+                    Comparison
+                </h2>
+            </div>
+
+            <div class="grid4r">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/002.mp4"></video>
+                    <figcaption class="video-caption">Fantacy-talking</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/003.mp4"></video>
+                    <figcaption class="video-caption">MuseTalk</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/001.mp4"></video>
+                    <figcaption class="video-caption">OmniAvatar</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/004.mp4"></video>
+                    <figcaption class="video-caption">Ours</figcaption>
+                </div>
+            </div>
+            <div class="grid4r">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/002.mp4"></video>
+                    <figcaption class="video-caption">Fantacy-talking</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/003.mp4"></video>
+                    <figcaption class="video-caption">MuseTalk</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/001.mp4"></video>
+                    <figcaption class="video-caption">OmniAvatar</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/cartoon/004.mp4"></video>
+                    <figcaption class="video-caption">Ours</figcaption>
+                </div>
+            </div>-->
+            <div class="grid">
+                <div class="video-player video-slider audio-control">
+                    <video loop playsinline preload="none" muted src="videos/i2v/3.mp4"></video>
+                </div>
+                <div class="video-player video-slider audio-control  span22">
+                    <video loop playsinline preload="none" muted src="videos/i2v/2.mp4"></video>
+                </div>
+                <div class="video-player video-slider audio-control">
+                    <video loop playsinline preload="none" muted src="videos/i2v/1.mp4"></video>
+                </div>
+                <div class="video-player video-slider audio-control span22">
+                    <video loop playsinline preload="none" muted src="videos/i2v/6.mp4"></video>
+                </div>
+                <div class="video-player video-slider audio-control">
+                    <video loop playsinline preload="none" muted src="videos/i2v/0.mp4"></video>
+                </div>
+                <div class="video-player video-slider audio-control">
+                    <video loop playsinline preload="none" muted src="videos/i2v/5.mp4"></video>
+                </div>
+            
+            </div>
+            <div class="audio-button audio-button-mobile"></div> 
+        </section>
+
+        <section id="identity">
+            <div class="text">
+                <h1>
+                    What is InfiniteTalk?
+                </h1>
+                <p>
+                    Given a source video and a target audio. InfiniteTalk generate audio synchronized full body motion while preserving the identity, background, and camera movements from the source video. Our method can also use a single image condition to perform long sequence human animation.
+                </p>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/2.mp4"></video>
+                    <figcaption class="video-caption">Video input</figcaption>
+                </div>
+                <div class="video-player audio-control span22">
+                    <video muted loop playsinline preload="none" src="videos/1.mp4"></video>
+                </div>
+                <div class="video-player">
+                    <audio controls>
+                        <source src="audios/1.wav" type="audio/wav">
+                    </audio>
+                    <!-- <audio src="audios/0.wav"></audio> -->
+                    <figcaption class="video-caption">Audio input</figcaption>
+                </div>
+                <!-- <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/realistic/003.mp4"></video>
+                </div> -->
+                <!-- <div class="video-player audio-control"> -->
+                <!-- </div> -->
+                <!-- <nl></nl> -->
+                <div class="video-player audio-control">
+                    <img src="images/0.png"></img>
+                    <figcaption class="video-caption">Image input</figcaption>
+                </div>
+                <div class="video-player audio-control span22">
+                    <video muted loop playsinline preload="none" src="videos/0.mp4"></video>
+                </div>
+                <div class="video-player">
+                    <audio controls>
+                        <source src="audios/0.wav" type="audio/wav">
+                    </audio>
+                    <!-- <audio src="audios/0.wav"></audio> -->
+                    <figcaption class="video-caption">Audio input</figcaption>
+                </div>
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+        </section>
+
+        <section id="audio">
+            <div class="text">
+                <h1>
+                    Sparse-frame video dubbing v.s. traditional video dubbing
+                </h1>
+            </div>
+            <div class="text">
+                <h2>
+                    Editing region
+                </h2>
+            </div>
+            <div class="grid2">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/output_dynamic_cvt_mask.mp4">Your browser does not support HTML5 video.</video>
+                    <figcaption class="video-caption">Traditional: mouth</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/output_static_cvt_mask.mp4">Your browser does not support HTML5 video.</video>
+                    <figcaption class="video-caption">Sparse-frame: whole video</figcaption>
+                </div>
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+            <div class="text">
+                <h2>
+                    Full body animation
+                </h2>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/0_0.mp4"></video>
+                    <figcaption class="video-caption">MuseTalk</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/0_latent_sync.mp4"></video>
+                    <figcaption class="video-caption">LatentSync</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/0_ours.mp4"></video>
+                    <figcaption class="video-caption">Ours</figcaption>
+                </div>
+            </div>
+            <div class="text">
+                <h2>
+                    Emotional expression
+                </h2>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/1_1.mp4"></video>
+                    <figcaption class="video-caption">MuseTalk</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/1_latent_sync.mp4"></video>
+                    <figcaption class="video-caption">LatentSync</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/1_ours.mp4"></video>
+                    <figcaption class="video-caption">Ours</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/2_2.mp4"></video>
+                    <figcaption class="video-caption">MuseTalk</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/2_latent_sync.mp4"></video>
+                    <figcaption class="video-caption">LatentSync</figcaption>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/comparison/2_ours.mp4"></video>
+                    <figcaption class="video-caption">Ours</figcaption>
+                </div>
+            </div>
+        </section>
+
+        <!-- <section id="shots">
+            <div class="text">
+                <h1>
+                    Movie shots dubbing
+                </h1>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/sing/001.mp4"></video>
+                </div>
+                <div class="video-player audio-control  span22">
+                    <video loop playsinline preload="none" muted src="videos/sing/008.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/sing/002.mp4"></video>
+                </div>
+                <div class="video-player audio-control span22">
+                    <video loop playsinline preload="none" muted src="videos/sing/003.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/sing/005.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video loop playsinline preload="none" muted src="videos/sing/004.mp4"></video>
+                </div>
+
+                
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+        </section> -->
+
+        
+<!-- 
+        <section id="shots">
+            <div class="text">
+                <h1>
+                    Generate instruction-following videos
+                </h1>
+            </div>
+            <div class="grid">
+                        <div>
+                        <div class="video-player audio-control">
+                            <video loop playsinline preload="none" muted src="videos/instruct/001.mp4"></video>
+                        </div>
+                        <p>In a cozy, warmly lit room, Nick Wilde, a fox with a mischievous grin, sits across from Judy Hopps, a rabbit with a determined expression. 
+                            Both are dressed casually; Nick in a green shirt and striped tie, Judy in a blue outfit with headphones resting on the table. 
+                            A Disney-branded mug sits between them on the wooden table. 
+                            The background features a rustic interior with a lamp, a window, and various household items, creating a homely atmosphere. 
+                            A medium shot captures their interaction as Nick picks up the mug and gently touches Judy's head, suggesting a moment of camaraderie and connection.</p>
+                        </div>
+
+                        <div>
+                        <div class="video-player audio-control">
+                            <video loop playsinline preload="none" muted src="videos/instruct/002.mp4"></video>
+                        </div>
+                        <p>A man and a woman are seated at an outdoor table, engaged in a conversation.
+                            The woman, dressed in a light pink top with a white cardigan, holds a red cup
+                            of coffee, takes a sip, and then places it back on the saucer. The man, wearing
+                            a striped shirt over a white t-shirt, is engrossed in his smartphone, looking
+                            down intently. The table is adorned with two red cups of coffee and a plate
+                            with a croissant. The background features a charming European street with pastel-colored
+                            buildings, greenery, and a partially open green umbrella. The scene captures
+                            a casual, everyday moment with a warm, inviting atmosphere.</p>
+                        </div>
+
+                        <div>
+                        <div class="video-player audio-control">
+                            <video loop playsinline preload="none" muted src="videos/instruct/003.mp4"></video>
+                        </div>
+                        <p>Two individuals sit at a white table in a studio with blue-and-white acoustic wall panels. 
+                            A man on the left wears a dark casual top, holding a coffee mug. 
+                            The woman on the right has a pair of studio headphones resting near her. 
+                            The man is speaking while the woman is listening and nodding occasionally. 
+                            The woman picks up the black headphones. A large wall-mounted TV displays technical interfaces.
+                             The scene suggests a collaborative workspace with professional audio-visual equipment in a bright studio environment.</p>
+                        </div>
+                    </div>
+                    <div class="grid">
+                        <div class="video-player audio-control span21">
+                            <video muted loop playsinline preload="none" muted src="videos/instruct/006.mp4"></video>
+                        </div>
+                        <div class="video-player audio-control">
+                            <video muted loop playsinline preload="none" muted src="videos/instruct/005.mp4"></video>
+                        </div>
+                    </div>
+        </section> -->
+
+        <!-- <section id="i2v">
+            <div class="text">
+                <h1>
+                    Comparison (Video input)
+                </h1>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/1.mp4"></video>
+                </div>
+                <p> MuseTalk
+                </div>
+
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/2.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/3.mp4"></video>
+                </div>
+            </div>
+
+            <div></div>
+            
+            <div class="grid grid3">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/1.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/2.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/3.mp4"></video>
+                </div>
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+        </section> -->
+        
+        <!-- <section id="i2v">
+            <div class="text">
+                <h1>
+                    Comparison (Single image input)
+                </h1>
+            </div>
+            <div class="grid">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/1.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/2.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/1/3.mp4"></video>
+                </div>
+            </div>
+
+            <div></div>
+            
+            <div class="grid grid3">
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/1.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/2.mp4"></video>
+                </div>
+                <div class="video-player audio-control">
+                    <video muted loop playsinline preload="none" src="videos/creative/2/3.mp4"></video>
+                </div>
+            </div>
+            <div class="audio-button audio-button-mobile"></div>
+        </section> -->
+
+        <section class="section">
+            <div class="container is-max-desktop">
+              <!-- Abstract. -->
+              <div class="columns is-centered has-text-centered">
+                <div class="column is-four-fifths">
+                  <h1>Abstract</h1>
+                  <div class="content has-text-justified">
+                    <p>
+                        Recent breakthroughs in video AIGC have ushered in a transformative era for audio-driven human animation. However, conventional video dubbing techniques remain constrained to oral region editing, resulting in discordant facial expressions and body gestures that compromise viewer immersion. To overcome this limitation, we introduce sparse-frame video dubbing—a novel paradigm that strategically preserves reference keyframes to maintain identity, iconic gestures, and camera trajectories while enabling holistic, audio-synchronized full-body motion editing. Through critical analysis, we identify why naive image-to-video models fail in this task, particularly their inability to achieve adaptive conditioning. Addressing this, we propose InfiniteTalk: a streaming audio-driven generator designed for infinite-length long sequence dubbing. This architecture leverages temporal context frames for seamless inter-chunk transitions and incorporates a simple yet effective sampling strategy that optimizes control strength via fine-grained reference frame positioning. Comprehensive evaluations on HDTF, CelebV-HQ, and EMTD datasets demonstrate state-of-the-art performance. Quantitative metrics confirm superior visual realism, emotional coherence, and full-body motion synchronization.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container is-max-desktop">
+              <div class="columns is-centered has-text-centered">
+                <!-- <div class="column is-four-fifths"> -->
+                <div class="column">
+                  <h1 class="title is-3">Method</h1>
+                  <div class="content has-text-justified">
+                    <p>
+                        We introduce InfiniteTalk, a audio-driven generator for long sequence sparse-frame video dubbing. It has a streaming video generation base that utilize context frames to inject momentum information that creates smooth inter-chunk transitions. To preserve human identity, background, and camera movements of the source video, it controls the output video by referencing keyframes. To achieve the soft reference mechanism in sparse-frame video dubbing, we investigate how and find the control strength is determined by the similarity between the video context and image condition. Based on our investigation, we propose a sampling strategy that balances control strength and motion alignment by fine-grained reference frame positioning, achieving high quality infinite length long sequence video dubbing with full body audio-aligned motion editing.
+                    </p>
+                    <div class="column">
+                      <img src="static/pipe.png" width="80%"/>
+                    </div>
+                  </div>          
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="team">
+            <div class="content">
+                <p>部分素材和视频源于真实视频，生成内容仅限学术使用，不允许商业使用。</p>
+                <p>Some materials and video sources are derived from real videos. The generated content is for academic use only and commercial use is not permitted.</p>
+            </div>
+        </section>
+
+
+        <script>
+            // Lazy load
+            const lazyLoadObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.play();
+                    } else {
+                        entry.target.pause();
+                    }
+                });
+            }, {rootMargin: '500px'});
+            document.querySelectorAll("video:not(.no-autoplay)").forEach(video => {
+                lazyLoadObserver.observe(video);
+                video.addEventListener("pointerdown", () => video.play());
+            });
+
+            // Audio control
+            const body = document.querySelector("body");
+            let globalmuted = true;
+            const isNarrow = () => window.innerWidth < 512;
+            document.querySelectorAll(".audio-control").forEach(wrapper => {
+                const video = wrapper.querySelector("video");
+                const button = document.createElement("div");
+
+                button.className = "audio-button";
+                button.onclick = function() {
+                    globalmuted = !globalmuted;
+                    video.muted = globalmuted;
+                    body.setAttribute("muted", globalmuted);
+                }
+                wrapper.addEventListener("mouseenter", () => {if (!isNarrow()) {video.muted = globalmuted}});
+                wrapper.addEventListener("mouseleave", () => {if (!isNarrow()) {video.muted = true}});
+                wrapper.appendChild(button);
+            });
+            document.querySelectorAll(".audio-button-mobile").forEach(button => {
+                button.onclick = () => {
+                    globalmuted = !globalmuted;
+                    body.setAttribute("muted", globalmuted);
+                    document.querySelectorAll(".audio-control video").forEach(video => {
+                        video.muted = globalmuted || !video.isIntersecting;
+                    });
+                }
+            });
+
+            const audioObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (isNarrow()) {
+                        video.muted = globalmuted || !entry.isIntersecting;
+                    }
+                    video.isIntersecting = entry.isIntersecting;
+                });
+            }, {threshold: 0.8});
+            document.querySelectorAll(".audio-control video").forEach(video => audioObserver.observe(video));
+
+            // progress bar.
+            document.querySelectorAll(".duration-indicator").forEach((wrapper) => {
+                const video = wrapper.querySelector("video");
+                const bar = document.createElement("div");
+                const barinner = document.createElement("div");
+                const time = document.createElement("div");
+
+                bar.className = "bar";
+                barinner.className = "barinner";
+                time.className = "time";
+
+                wrapper.appendChild(bar);
+                bar.appendChild(barinner);
+                wrapper.appendChild(time);
+
+                function format(seconds) {
+                    seconds = Math.round(seconds);
+                    const minutes = Math.floor(seconds / 60);
+                    seconds = seconds - (minutes * 60);
+                    seconds = String(seconds);
+                    seconds = seconds.length > 1 ? seconds : "0" + seconds;
+                    return `${minutes}:${seconds}`;
+                }
+
+                function update() {
+                    if (!isNaN(video.duration)) {
+                        barinner.style.width = `${video.currentTime / video.duration * 100}%`;
+                        time.innerText = `${format(video.currentTime)} / ${format(video.duration)}`;
+                    } else {
+                        time.innerText = "";
+                    }
+                    requestAnimationFrame(update);
+                }
+                requestAnimationFrame(update);
+            })
+
+            const shotsVideo = document.querySelector("#shots video");
+            const shotList = document.querySelector("#shots .shots-list");
+            const shotListItems = document.querySelectorAll("#shots .shots-list > div");
+            const shotTimesteps = Array.from(shotListItems).map(element => parseInt(element.getAttribute("timestep")));
+
+            shotListItems.forEach(element => {
+                element.addEventListener("click", () => {
+                    const timestep = parseInt(element.getAttribute("timestep"));
+                    shotsVideo.currentTime = timestep;
+                });
+            });
+
+            let lastShot = null;
+            shotsVideo.addEventListener("timeupdate", () => {
+                const currentTime = shotsVideo.currentTime;
+                const currentShot = shotTimesteps.findLastIndex(x => x < currentTime + 0.5);
+                if (currentShot != lastShot) {
+                    if (lastShot != null) {
+                        shotListItems[lastShot].removeAttribute("selected");
+                    }
+                    shotListItems[currentShot].setAttribute("selected", true);
+                    if (isNarrow() && Math.abs(shotList.scrollLeft - shotListItems[currentShot].offsetLeft) < 500) {
+                        shotList.scrollTo({
+                            left: shotListItems[currentShot].offsetLeft,
+                            behavior: "smooth"
+                        });
+                    }
+                    lastShot = currentShot;
+                }
+            })
+
+            document.addEventListener("scroll", () => {
+                const top = Math.max(Math.min(window.scrollY / 200, 1), 0);
+                document.documentElement.style.setProperty('--intro-scale', top)
+            })
+
+            document.querySelectorAll(".video-slider").forEach((slider) => {
+                // slider
+                const sliderButton = slider.querySelector(".slider");
+                const sliderVideo1 = slider.querySelector(".video1");
+                let sliding = false;
+                let slidePosition = 0.5;
+                let lastPointerX = null;
+                let lastSlidePosition = null;
+                sliderButton.addEventListener("pointerdown", e => {
+                    sliding = true;
+                    lastPointerX = e.clientX || e.touches[0].clientX;
+                    lastSlidePosition = sliderButton.offsetLeft;
+                    sliderButton.style.opacity = 1;
+                });
+                function handlemove(e) {
+                    if (sliding) {
+                        e.preventDefault();
+                        let clientX = e.clientX || e.touches[0].clientX;
+                        let deltaX = clientX - lastPointerX;
+                        let ratio = (lastSlidePosition + deltaX) / slider.offsetWidth;
+                        ratio = Math.min(Math.max(ratio, 0.01), 0.99);
+                        sliderButton.style.left = `${ratio * 100}%`;
+                        sliderVideo1.style.width = `${ratio * 100}%`;
+                    }
+                }
+                document.addEventListener("mousemove", handlemove);
+                document.addEventListener("touchmove", handlemove, {passive: false});
+                document.addEventListener("pointermove", handlemove, {passive: false});
+                document.addEventListener("pointerup", () => {
+                    sliding = false;
+                    sliderButton.style.opacity = null;
+                });
+
+                // sync video.
+                const video1 = slider.querySelector(".video1 video");
+                const video2 = slider.querySelector(".video2 video");
+                function sync() {
+                    if (Math.abs(video2.currentTime - video1.currentTime) > 1 / 24) {
+                        video2.currentTime = video1.currentTime;
+                    }
+                    requestAnimationFrame(sync);
+                }
+                requestAnimationFrame(sync);
+
+                // full screen.
+                const fullscreenButton = slider.querySelector(".fullscreen");
+                if (!document.fullscreenEnabled) {
+                    fullscreenButton.remove();
+                } else {
+                    fullscreenButton.addEventListener("click", () => {
+                        if (!document.fullscreenElement) {
+                            slider.requestFullscreen();
+                            body.setAttribute("fullscreen", true);
+                        } else {
+                            document.exitFullscreen();
+                        }
+                    })
+                }
+            })
+            document.addEventListener("fullscreenchange", () => {
+                if (document.fullscreenElement != null) {
+                    body.setAttribute("fullscreen", "");
+                } else {
+                    body.removeAttribute("fullscreen");
+                }
+            });
+
+
+            // features film
+            document.querySelectorAll(".feature-video").forEach(featureVideo => {
+                const video = featureVideo.querySelector("video.final-video");
+                featureVideo.addEventListener("click", e => {
+                    video.currentTime = 0;
+                    video.play();
+                    video.requestFullscreen();
+                    video.style.opacity = 1;
+                })
+                video.addEventListener("fullscreenchange", () => {
+                    if (!document.fullscreenElement) {
+                        video.pause();
+                        video.style.opacity = 0;
+                    }
+                })
+                video.addEventListener("ended", () => {
+                    video.pause();
+                    video.style.opacity = 0;
+                    document.exitFullscreen();
+                })
+            });
+
+            document.querySelectorAll(".page-control").forEach(controller => {
+                controller.querySelectorAll(".page-select > div").forEach(selector => {
+                    selector.addEventListener("click", () => {
+                        const oldSelector = controller.querySelector(".page-select > div[selected=true]");
+                        if (selector != oldSelector) {
+                            selector.setAttribute("selected", "true");
+                            oldSelector.setAttribute("selected", "false");
+                            
+                            const newTarget = selector.getAttribute("target");
+                            const oldTarget = oldSelector.getAttribute("target");
+
+                            const newPage = controller.querySelector(`.page-content > div[page=${newTarget}]`);
+                            const oldPage = controller.querySelector(`.page-content > div[page=${oldTarget}]`);
+
+                            const oldPageScrollLeft = oldPage.scrollLeft;
+
+                            newPage.setAttribute("selected", "true");
+                            oldPage.setAttribute("selected", "false");
+
+                            newPage.querySelectorAll("video").forEach(video => {
+                                video.currentTime = 0;
+                                video.play();
+                            });
+
+                            oldPage.querySelectorAll("video").forEach(video => {
+                                video.pause();
+                            });
+
+                            newPage.scrollLeft = oldPageScrollLeft;
+                        }
+                    })
+                })
+            })
+        </script>
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"944e28ba3a2961e3","version":"2025.4.0-1-g37f21b1","r":1,"token":"8591086b57754c278d4db02301f960eb","serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}}}' crossorigin="anonymous"></script>
+</body>
+</html>
