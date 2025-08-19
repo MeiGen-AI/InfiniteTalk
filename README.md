@@ -1,6 +1,6 @@
-# ComfyUI wrapper nodes for [InfiniteTalk]().
+# ComfyUI wrapper nodes for [InfiniteTalk](https://github.com/MeiGen-AI/InfiniteTalk).
 
-This project is based on [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper)
+This project is based on [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper). The checkpoint for InfiniteTalk-ComfyUI can be found in [HuggingFace](https://huggingface.co/MeiGen-AI/InfiniteTalk/tree/main/comfyui).
 
 
 # Installation
