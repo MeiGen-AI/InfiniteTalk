@@ -9,6 +9,7 @@ from xfuser.core.distributed import (
     get_sp_group,
 )
 import xformers.ops
+from sageattention import sageattn
 
 try:
     import flash_attn_interface
@@ -181,7 +182,7 @@ def attention(
         k = k.transpose(1, 2).to(dtype)
         v = v.transpose(1, 2).to(dtype)
 
-        out = torch.nn.functional.scaled_dot_product_attention(
+        out = sageattn(
             q, k, v, attn_mask=attn_mask, is_causal=causal, dropout_p=dropout_p)
 
         out = out.transpose(1, 2).contiguous()

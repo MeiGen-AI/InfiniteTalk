@@ -2,7 +2,7 @@
 # Copyright 2024-2025 The Alibaba Wan Team Authors. All rights reserved.
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+from sageattention import sageattn
 
 __all__ = ['XLMRoberta', 'xlm_roberta_large']
 
@@ -37,7 +37,7 @@ class SelfAttention(nn.Module):
 
         # compute attention
         p = self.dropout.p if self.training else 0.0
-        x = F.scaled_dot_product_attention(q, k, v, mask, p)
+        x = sageattn(q, k, v, mask, p)
         x = x.permute(0, 2, 1, 3).reshape(b, s, c)
 
         # output

@@ -6,6 +6,7 @@ import torch.cuda.amp as amp
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
+from sageattention import sageattn
 
 __all__ = [
     'WanVAE',
@@ -249,7 +250,7 @@ class AttentionBlock(nn.Module):
                                                          3, dim=-1)
 
         # apply attention
-        x = F.scaled_dot_product_attention(
+        x = sageattn(
             q,
             k,
             v,
