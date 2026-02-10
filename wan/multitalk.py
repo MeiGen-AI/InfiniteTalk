@@ -135,6 +135,7 @@ class InfiniteTalkPipeline:
         quant = None,
         dit_path = None,
         infinitetalk_dir=None,
+        enable_torch_compile=False,
     ):
         r"""
         Initializes the image-to-video generation model components.
@@ -376,6 +377,12 @@ class InfiniteTalkPipeline:
         self.cpu_offload = False
         self.model_names = ["model"]
         self.vram_management = False
+
+        self.enable_torch_compile = enable_torch_compile
+        if enable_torch_compile:
+            torch._dynamo.config.capture_scalar_outputs = True
+            logging.info("Enabling torch compile for wan model, mode: max-autotune-no-cudagraphs.")
+            self.model.compile(mode="max-autotune-no-cudagraphs", fullgraph=False, dynamic=None)
 
     def add_noise(
         self,
@@ -647,7 +654,11 @@ class InfiniteTalkPipeline:
         torch.cuda.manual_seed_all(seed)
         np.random.seed(seed)
         random.seed(seed)
-        torch.backends.cudnn.deterministic = True
+        if extra_args.enable_torch_deterministic:
+            torch.backends.cudnn.deterministic = True
+            logging.info("torch deterministic is enabled")
+        else:
+            logging.info("torch deterministic is disabled")
 
         # start video generation iteratively
         while True:
@@ -672,7 +683,7 @@ class InfiniteTalkPipeline:
                     audio_emb = full_audio_embs[human_idx][center_indices][None,...].to(self.device)
                     audio_embs.append(audio_emb)
                 audio_embs = torch.concat(audio_embs, dim=0).to(self.param_dtype)
-                torch_gc()
+                # torch_gc()
 
             h, w = cond_image.shape[-2], cond_image.shape[-1]
             lat_h, lat_w = h // self.vae_stride[1], w // self.vae_stride[2]
@@ -712,7 +723,7 @@ class InfiniteTalkPipeline:
                     clip_context = self.clip.visual(cond_image[:, :, -1:, :, :]).to(self.param_dtype) 
                     if offload_model:
                         self.clip.model.cpu()
-                    torch_gc()
+                    # torch_gc()
 
                 # zero padding and vae encode
                 with timed(
@@ -741,7 +752,7 @@ class InfiniteTalkPipeline:
                         latent_motion_frames = self.vae.encode(cond_frame)[0]
 
                 y = torch.concat([msk, y], dim=1) # B 4+C T H W
-                torch_gc()
+                # torch_gc()
             
 
             # construct human mask
@@ -786,7 +797,7 @@ class InfiniteTalkPipeline:
             ref_target_masks = (ref_target_masks > 0) 
             ref_target_masks = ref_target_masks.float().to(self.device)
 
-            torch_gc()
+            # torch_gc()
 
             @contextmanager
             def noop_no_sync():
@@ -853,7 +864,7 @@ class InfiniteTalkPipeline:
                     'ref_target_masks': ref_target_masks
                 }
 
-                torch_gc()
+                # torch_gc()
                 if not self.vram_management:
                     self.model.to(self.device)
                 else:
@@ -890,7 +901,7 @@ class InfiniteTalkPipeline:
                     ):
                         noise_pred_cond = self.model(
                         latent_model_input, t=timestep, **arg_c)[0] 
-                    torch_gc()
+                    # torch_gc()
 
                     if math.isclose(text_guide_scale, 1.0):
                         with timed(
@@ -902,7 +913,7 @@ class InfiniteTalkPipeline:
                         ):
                             noise_pred_drop_audio = self.model(
                                 latent_model_input, t=timestep, **arg_null_audio)[0]  
-                        torch_gc()
+                        # torch_gc()
                     else:
                         with timed(
                             "dit forward: drop_text",
@@ -913,7 +924,7 @@ class InfiniteTalkPipeline:
                         ):
                             noise_pred_drop_text = self.model(
                                 latent_model_input, t=timestep, **arg_null_text)[0] 
-                        torch_gc()
+                        # torch_gc()
                         with timed(
                             "dit forward: uncond",
                             enabled=timing_on,
@@ -923,7 +934,7 @@ class InfiniteTalkPipeline:
                         ):
                             noise_pred_uncond = self.model(
                                 latent_model_input, t=timestep, **arg_null)[0]  
-                        torch_gc()
+                        # torch_gc()
 
                     if extra_args.use_apg:
                         # correct update direction
@@ -974,7 +985,7 @@ class InfiniteTalkPipeline:
                 if offload_model: 
                     if not self.vram_management:
                         self.model.cpu()
-                torch_gc()
+                # torch_gc()
 
                 with timed(
                     "vae decode",
@@ -1041,7 +1052,7 @@ class InfiniteTalkPipeline:
             
             if max_frames_num <= frame_num: break
             
-            torch_gc()
+            # torch_gc()
             if offload_model:    
                 torch.cuda.synchronize()
             if dist.is_initialized():

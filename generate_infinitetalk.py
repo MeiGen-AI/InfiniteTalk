@@ -287,7 +287,16 @@ def _parse_args():
         help="Print wall-clock timing for major stages (uses print + flush). "
              "You can also set env INFINI_PRINT_TIMING=1."
     )
-    
+    parser.add_argument(
+        "--enable_torch_deterministic",
+        action="store_true",
+        help="Enable torch deterministic for video generation."
+    )
+    parser.add_argument(
+        "--enable_torch_compile",
+        action="store_true",
+        help="Enable torch compile for wan model."
+    )
     args = parser.parse_args()
 
     _validate_args(args)
@@ -336,9 +345,10 @@ def _init_logging(rank):
         logging.basicConfig(
             level=logging.INFO,
             format="[%(asctime)s] %(levelname)s: %(message)s",
-            handlers=[logging.StreamHandler(stream=sys.stdout)])
+            handlers=[logging.StreamHandler(stream=sys.stdout)],
+            force=True)
     else:
-        logging.basicConfig(level=logging.ERROR)
+        logging.basicConfig(level=logging.ERROR, force=True)
 
 def get_embedding(speech_array, wav2vec_feature_extractor, audio_encoder, sr=16000, device='cpu'):
     audio_duration = len(speech_array) / sr
@@ -583,7 +593,8 @@ def generate(args):
             lora_scales=args.lora_scale,
             quant=args.quant,
             dit_path=args.dit_path,
-            infinitetalk_dir=args.infinitetalk_dir
+            infinitetalk_dir=args.infinitetalk_dir,
+            enable_torch_compile=args.enable_torch_compile
         )
     if args.num_persistent_param_in_dit is not None:
         wan_i2v.vram_management = True

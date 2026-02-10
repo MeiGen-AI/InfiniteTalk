@@ -311,6 +311,7 @@ class SingleStreamAttention(nn.Module):
         self.add_q_norm = norm_layer(self.head_dim) if qk_norm else nn.Identity()
         self.add_k_norm = norm_layer(self.head_dim) if qk_norm else nn.Identity()
 
+    @torch.compiler.disable
     def forward(self, x: torch.Tensor, encoder_hidden_states: torch.Tensor, shape=None, enable_sp=False, kv_seq=None) -> torch.Tensor:
        
         N_t, N_h, N_w = shape
@@ -421,6 +422,7 @@ class SingleStreamMutiAttention(SingleStreamAttention):
 
         self.rope_1d = RotaryPositionalEmbedding1D(self.head_dim)
 
+    @torch.compiler.disable
     def forward(self, 
                 x: torch.Tensor, 
                 encoder_hidden_states: torch.Tensor, 

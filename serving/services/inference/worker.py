@@ -167,6 +167,7 @@ class TorchrunInferenceWorker:
                 quant=quant,
                 dit_path=dit_path,
                 infinitetalk_dir=infinitetalk_dir,
+                enable_torch_compile=getattr(args, "enable_torch_compile", False),
             )
             logger.info(f"Rank {self.rank}: [3/4] 主模型加载完成，用时 {time.perf_counter() - t_pipe:.1f}s")
 
@@ -280,6 +281,7 @@ class TorchrunInferenceWorker:
             extra_args.use_apg = bool(task_data.get("use_apg", False))
             extra_args.apg_momentum = float(task_data.get("apg_momentum", -0.75))
             extra_args.apg_norm_threshold = float(task_data.get("apg_norm_threshold", 55))
+            extra_args.enable_torch_deterministic = bool(task_data.get("enable_torch_deterministic", False))
 
             with timed_stage("pipeline.generate_infinitetalk()", enabled=timing_on, stats=timing_stats, key="generate_infinitetalk"):
                 video_tensor = self.pipeline.generate_infinitetalk(
