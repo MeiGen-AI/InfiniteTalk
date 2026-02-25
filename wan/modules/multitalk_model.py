@@ -18,7 +18,7 @@ try:
     from sageattention import sageattn
     USE_SAGEATTN = True
     logging.info("Using sageattn")
-except:
+except Exception:
     USE_SAGEATTN = False
 
 __all__ = ['WanModel']

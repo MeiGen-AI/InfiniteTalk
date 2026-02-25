@@ -402,7 +402,7 @@ class QwenPromptExpander(PromptExpander):
             )
             try:
                 from .qwen_vl_utils import process_vision_info
-            except:
+            except Exception:
                 from qwen_vl_utils import process_vision_info
             self.process_vision_info = process_vision_info
             min_pixels = 256 * 28 * 28
