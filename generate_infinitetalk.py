@@ -606,8 +606,9 @@ def generate(args):
                 emb2_path = os.path.join(args.audio_save_dir, '2.pt')
                 sum_audio = os.path.join(args.audio_save_dir, 'sum.wav')
                 sf.write(sum_audio, sum_human_speechs, 16000)
-                torch.save(audio_embedding_1, emb1_path)
-                torch.save(audio_embedding_2, emb2_path)
+                if rank == 0:
+                    torch.save(audio_embedding_1, emb1_path)
+                    torch.save(audio_embedding_2, emb2_path)
                 cond_audio['person1'] = emb1_path
                 cond_audio['person2'] = emb2_path
                 input_clip['video_audio'] = sum_audio
@@ -618,7 +619,8 @@ def generate(args):
                 emb_path = os.path.join(args.audio_save_dir, '1.pt')
                 sum_audio = os.path.join(args.audio_save_dir, 'sum.wav')
                 sf.write(sum_audio, human_speech, 16000)
-                torch.save(audio_embedding, emb_path)
+                if rank == 0:
+                    torch.save(audio_embedding, emb_path)
                 cond_audio['person1'] = emb_path
                 input_clip['video_audio'] = sum_audio
                 v_length = audio_embedding.shape[0]
