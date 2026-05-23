@@ -67,13 +67,13 @@ class KModel(torch.nn.Module):
         if not model:
             try:
                 model = hf_hub_download(repo_id=repo_id, filename=KModel.MODEL_NAMES[repo_id])
-            except:
+            except Exception:
                 model = os.path.join(repo_id, 'kokoro-v1_0.pth')
         for key, state_dict in torch.load(model, map_location='cpu', weights_only=True).items():
             assert hasattr(self, key), key
             try:
                 getattr(self, key).load_state_dict(state_dict)
-            except:
+            except Exception:
                 logger.debug(f"Did not load {key} from state_dict")
                 state_dict = {k[7:]: v for k, v in state_dict.items()}
                 getattr(self, key).load_state_dict(state_dict, strict=False)
