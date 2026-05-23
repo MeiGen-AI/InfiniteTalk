@@ -1,0 +1,46 @@
+# ==========================================================
+# 🐳 InfiniteTalk docker-compose sample
+# - NVIDIA GPU environment required
+# - Services: Gradio WebUI, Inference CLI
+# - For details and usage, refer to README.md
+# ==========================================================
+
+version: "3.9"
+
+services:
+
+  # 🌐 InfiniteTalk Gradio WebUI service
+  infinitetalk-webui:
+    build:
+      context: .
+      dockerfile: Dockerfile.cu12
+    volumes:
+      - .:/app
+      - ./.cache/huggingface:/root/.cache/huggingface
+      - ./weights:/app/weights
+      - ./output:/app/output
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - TZ=Asia/Tokyo
+    ports:
+      - "8418:8418"
+    mem_limit: 128g
+    shm_size: 64g
+    # command: bash -c "python app.py --ip 0.0.0.0 --ckpt_dir weights/Wan2.1-I2V-14B-480P --wav2vec_dir weights/chinese-wav2vec2-base --infinitetalk_dir weights/InfiniteTalk/single/infinitetalk.safetensors --num_persistent_param_in_dit 0 --motion_frame 9"
+    tty: true
+    stdin_open: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+
+# ----------------------------------------------------------
+# Usage examples:
+#   Start WebUI: docker compose up infinitetalk-webui
+#   Use CLI: docker compose --profile cli up infinitetalk-cli
+#   Stop: docker compose down
+# ----------------------------------------------------------
